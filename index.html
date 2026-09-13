@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ściąga — Góra/Dół</title>
+<style>
+  :root{
+    --bg:#14181b; --surface:#1d242a; --surface2:#232c33; --field:#10151a;
+    --text:#eef3f5; --muted:#8b98a1; --line:#2c353c;
+    --num:#ffbf47; --tag:#3ecf8e;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0; padding:0; background:var(--bg);}
+  body{
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-text-size-adjust:100%;
+    padding:0 10px calc(24px + env(safe-area-inset-bottom));
+  }
+  .wrap{max-width:560px; margin:0 auto;}
+  .head{padding:18px 6px 8px;}
+  .head h1{margin:0; font-size:22px; letter-spacing:.2px;}
+  .head p{margin:6px 0 0; color:var(--muted); font-size:14px; line-height:1.45;}
+  .tabs{
+    display:flex; gap:8px; padding:12px 4px; overflow-x:auto;
+    position:sticky; top:0; background:var(--bg); border-bottom:1px solid var(--line);
+    scrollbar-width:none; z-index:5;
+  }
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab{
+    flex:0 0 auto; background:var(--surface); color:var(--muted);
+    border:1px solid var(--line); border-radius:999px;
+    padding:12px 18px; font-size:16px; font-weight:600; cursor:pointer;
+    white-space:nowrap; font-family:inherit;
+  }
+  .tab[aria-selected="true"]{background:var(--text); color:#14181b; border-color:var(--text);}
+  .panel{display:none; padding:10px 4px 8px;}
+  .panel.on{display:block;}
+  .note{
+    color:var(--muted); font-size:14px; line-height:1.55;
+    padding:12px 14px; background:var(--surface); border-radius:10px; margin:6px 0 14px;
+  }
+  .note b{color:var(--text); font-weight:600;}
+  .row{
+    padding:15px 14px; margin:9px 0;
+    background:var(--surface); border-radius:12px; border-left:3px solid transparent;
+  }
+  .row.prio{border-left-color:var(--tag); background:var(--surface2);}
+  .rtop{display:flex; align-items:center; gap:12px;}
+  .idx{
+    flex:0 0 26px; text-align:center; font-size:16px; font-weight:700;
+    color:var(--muted); font-variant-numeric:tabular-nums;
+  }
+  .mid{flex:1 1 auto; min-width:0;}
+  .name{font-size:17px; font-weight:600; line-height:1.3;}
+  .meta{margin-top:5px; font-size:13px; color:var(--muted); line-height:1.4;}
+  .pill-tag{
+    display:inline-block; margin-left:6px; padding:2px 8px; border-radius:6px;
+    font-size:11.5px; font-weight:600; color:var(--tag);
+    background:rgba(62,207,142,.12); vertical-align:middle;
+  }
+  .right{flex:0 0 auto; text-align:right;}
+  .reps{font-size:22px; font-weight:800; color:var(--num); font-variant-numeric:tabular-nums; line-height:1;}
+  .sub{color:var(--muted); font-weight:600; font-size:14px;}
+  .rest{margin-top:6px; font-size:13px; color:var(--muted); white-space:nowrap;}
+  /* logowanie ciężaru */
+  .logbar{display:flex; align-items:center; gap:8px; margin-top:13px; padding-top:12px; border-top:1px solid var(--line);}
+  .logbar .lbl{font-size:13px; color:var(--muted);}
+  .step{
+    width:42px; height:42px; border-radius:10px; border:1px solid var(--line);
+    background:var(--surface2); color:var(--text); font-size:24px; font-weight:700; line-height:1;
+    display:flex; align-items:center; justify-content:center; cursor:pointer; user-select:none;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .step:active{background:var(--line);}
+  .winput{
+    width:80px; height:42px; text-align:center; font-size:19px; font-weight:700;
+    color:var(--text); background:var(--field); border:1px solid var(--line);
+    border-radius:10px; font-variant-numeric:tabular-nums; font-family:inherit;
+  }
+  .unit{font-size:14px; color:var(--muted);}
+  .hint{margin-left:auto; font-size:12px; color:var(--muted); text-align:right; line-height:1.3;}
+  .hint.ok{color:var(--tag);}
+  .legend{padding:12px 6px 6px; color:var(--muted); font-size:13px; line-height:1.5;}
+  .legend .dot{color:var(--tag); font-weight:700;}
+  .legend .cy{color:var(--num); font-weight:700;}
+  .tools{display:flex; gap:10px; padding:14px 4px 6px;}
+  .btn{
+    flex:1; padding:13px; border-radius:10px; border:1px solid var(--line);
+    background:var(--surface); color:var(--text); font-size:14px; font-weight:600; font-family:inherit; cursor:pointer;
+  }
+  .btn.ghost{color:var(--muted);}
+  .savenote{padding:2px 6px 10px; color:var(--muted); font-size:12px; line-height:1.5;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="head">
+    <h1>Ściąga — Góra/Dół</h1>
+    <p>Rotacja: Góra A → Dół A → Góra B → Dół B. Rób sesje po kolei w dni treningowe. Nigdy dwie Góra ani dwie Dół pod rząd.</p>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="true"  data-p="warm">Rozgrzewka</button>
+    <button class="tab" role="tab" aria-selected="false" data-p="ga">Góra A</button>
+    <button class="tab" role="tab" aria-selected="false" data-p="da">Dół A</button>
+    <button class="tab" role="tab" aria-selected="false" data-p="gb">Góra B</button>
+    <button class="tab" role="tab" aria-selected="false" data-p="db">Dół B</button>
+  </div>
+
+  <!-- ROZGRZEWKA -->
+  <div class="panel on" data-panel="warm">
+    <div class="note"><b>~10–12 min, przed każdym treningiem.</b> RIR 1–3 (zostaw 1–3 powtórzenia w zapasie). Tyg. 1–3: technika, RIR 2–3.</div>
+    <div class="row"><div class="rtop"><div class="idx">1</div><div class="mid"><div class="name">Cardio, lekko</div><div class="meta">rower / bieżnia z nachyleniem</div></div><div class="right"><div class="reps">5 min</div></div></div></div>
+    <div class="row"><div class="rtop"><div class="idx">2</div><div class="mid"><div class="name">Rolowanie (SMR)</div><div class="meta">Góra: klatka, plecy, T-spine · Dół: uda, TFL, przywodziciele</div></div><div class="right"><div class="reps">~3 min</div><div class="rest">30–45 s/miejsce</div></div></div></div>
+    <div class="row"><div class="rtop"><div class="idx">3</div><div class="mid"><div class="name">Aktywacja — dni Góra</div><div class="meta">band pull-apart 2×15 · chin tucks 2×10 · rotacja zewn. 2×12</div></div><div class="right"><div class="reps">~5 min</div></div></div></div>
+    <div class="row"><div class="rtop"><div class="idx">3</div><div class="mid"><div class="name">Aktywacja — dni Dół</div><div class="meta">mostek pośladkowy 2×15 · clamshells 2×12 · dead bug 2×8</div></div><div class="right"><div class="reps">~5 min</div></div></div></div>
+    <div class="row"><div class="rtop"><div class="idx">4</div><div class="mid"><div class="name">Serie wprowadzające</div><div class="meta">na 1. ćwiczeniu, rosnący ciężar</div></div><div class="right"><div class="reps">2–3</div></div></div></div>
+  </div>
+
+  <!-- GÓRA A -->
+  <div class="panel" data-panel="ga">
+    <div class="row prio" data-ex="ga1"><div class="rtop"><div class="idx">1</div><div class="mid"><div class="name">Wiosłowanie sztangą / hantlą jednorącz <span class="pill-tag">postawa</span></div><div class="meta">barki w dół, ciągnij do bioder</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2 min</div></div></div></div>
+    <div class="row" data-ex="ga2"><div class="rtop"><div class="idx">2</div><div class="mid"><div class="name">Podciąganie / ściąganie drążka</div><div class="meta">łopatki najpierw w dół</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2 min</div></div></div></div>
+    <div class="row" data-ex="ga3"><div class="rtop"><div class="idx">3</div><div class="mid"><div class="name">Wyciskanie hantli, ławka płaska</div><div class="meta">łopatki ściągnięte</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2 min</div></div></div></div>
+    <div class="row prio" data-ex="ga4"><div class="rtop"><div class="idx">4</div><div class="mid"><div class="name">Face pull (wyciąg) <span class="pill-tag">postawa</span></div><div class="meta">tylne aktony + rotatory</div></div><div class="right"><div class="reps">3×15</div><div class="rest">60–90 s</div></div></div></div>
+    <div class="row" data-ex="ga5"><div class="rtop"><div class="idx">5</div><div class="mid"><div class="name">Wyciskanie hantli nad głowę, siedząc</div><div class="meta">żebra w dół, nie wyginaj lędźwi</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">90 s</div></div></div></div>
+    <div class="row" data-ex="ga6"><div class="rtop"><div class="idx">6</div><div class="mid"><div class="name">Uginanie ramion (biceps)</div><div class="meta">łamany gryf / hantle</div></div><div class="right"><div class="reps">2–3×10–12</div><div class="rest">60–90 s</div></div></div></div>
+    <div class="row prio" data-ex="ga7"><div class="rtop"><div class="idx">7</div><div class="mid"><div class="name">Rotacja zewn. z gumą + chin tucks <span class="pill-tag">postawa</span></div><div class="meta">bark + ustawienie szyi</div></div><div class="right"><div class="reps">2×12–15</div><div class="rest">45 s</div></div></div></div>
+  </div>
+
+  <!-- DÓŁ A -->
+  <div class="panel" data-panel="da">
+    <div class="row prio" data-ex="da1"><div class="rtop"><div class="idx">1</div><div class="mid"><div class="name">Hip Thrust <span class="pill-tag">postawa</span></div><div class="meta">broda do klatki, żebra w dół, czuj pośladki</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2 min</div></div></div></div>
+    <div class="row" data-ex="da2"><div class="rtop"><div class="idx">2</div><div class="mid"><div class="name">Przysiad goblet / ze sztangą</div><div class="meta">klatka wysoko, kolana na zewnątrz</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2–3 min</div></div></div></div>
+    <div class="row prio" data-ex="da3"><div class="rtop"><div class="idx">3</div><div class="mid"><div class="name">Martwy ciąg rumuński (RDL) <span class="pill-tag">postawa</span></div><div class="meta">plecy proste, biodra w tył</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2 min</div></div></div></div>
+    <div class="row" data-ex="da4"><div class="rtop"><div class="idx">4</div><div class="mid"><div class="name">Wykrok w tył</div><div class="meta">tułów lekko w przód, obciąż pośladek</div></div><div class="right"><div class="reps">2–3×8–10 <span class="sub">/nogę</span></div><div class="rest">90 s</div></div></div></div>
+    <div class="row" data-ex="da5"><div class="rtop"><div class="idx">5</div><div class="mid"><div class="name">Uginanie nóg (leg curl)</div><div class="meta">dwugłowe uda</div></div><div class="right"><div class="reps">2–3×12</div><div class="rest">60–90 s</div></div></div></div>
+    <div class="row prio" data-ex="da6"><div class="rtop"><div class="idx">6</div><div class="mid"><div class="name">Dead bug <span class="pill-tag">postawa</span></div><div class="meta">wydech, lędźwie wgniataj w podłogę</div></div><div class="right"><div class="reps">3×8–10 <span class="sub">/str.</span></div><div class="rest">45–60 s</div></div></div></div>
+    <div class="row" data-ex="da7"><div class="rtop"><div class="idx">7</div><div class="mid"><div class="name">Plank boczny</div><div class="meta">łokieć pod barkiem, pośladki napięte</div></div><div class="right"><div class="reps">2–3×20–40 s <span class="sub">/str.</span></div><div class="rest">45 s</div></div></div></div>
+  </div>
+
+  <!-- GÓRA B -->
+  <div class="panel" data-panel="gb">
+    <div class="row prio" data-ex="gb1"><div class="rtop"><div class="idx">1</div><div class="mid"><div class="name">Wiosłowanie wyciąg siedząc <span class="pill-tag">postawa</span></div><div class="meta">barki w dół, ściągaj łopatki</div></div><div class="right"><div class="reps">3×10–12</div><div class="rest">2 min</div></div></div></div>
+    <div class="row" data-ex="gb2"><div class="rtop"><div class="idx">2</div><div class="mid"><div class="name">Podciąganie / ściąganie szeroko</div><div class="meta">szeroki chwyt</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2 min</div></div></div></div>
+    <div class="row" data-ex="gb3"><div class="rtop"><div class="idx">3</div><div class="mid"><div class="name">Wyciskanie hantli, skos w górę</div><div class="meta">górna klatka</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2 min</div></div></div></div>
+    <div class="row prio" data-ex="gb4"><div class="rtop"><div class="idx">4</div><div class="mid"><div class="name">Rear delt fly (odwodzenie w opadzie) <span class="pill-tag">postawa</span></div><div class="meta">tylne aktony barków</div></div><div class="right"><div class="reps">3×12–15</div><div class="rest">60–90 s</div></div></div></div>
+    <div class="row" data-ex="gb5"><div class="rtop"><div class="idx">5</div><div class="mid"><div class="name">Unoszenie hantli bokiem</div><div class="meta">boczne aktony</div></div><div class="right"><div class="reps">3×12–15</div><div class="rest">60–90 s</div></div></div></div>
+    <div class="row" data-ex="gb6"><div class="rtop"><div class="idx">6</div><div class="mid"><div class="name">Triceps (wyciąg / francuskie)</div><div class="meta">—</div></div><div class="right"><div class="reps">2–3×10–12</div><div class="rest">60–90 s</div></div></div></div>
+    <div class="row prio" data-ex="gb7"><div class="rtop"><div class="idx">7</div><div class="mid"><div class="name">Band pull-apart + rotacja zewn. <span class="pill-tag">postawa</span></div><div class="meta">—</div></div><div class="right"><div class="reps">2×15–20</div><div class="rest">45 s</div></div></div></div>
+  </div>
+
+  <!-- DÓŁ B -->
+  <div class="panel" data-panel="db">
+    <div class="row" data-ex="db1"><div class="rtop"><div class="idx">1</div><div class="mid"><div class="name">Przysiad ze sztangą / bułgarski</div><div class="meta">—</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2–3 min</div></div></div></div>
+    <div class="row prio" data-ex="db2"><div class="rtop"><div class="idx">2</div><div class="mid"><div class="name">Hip Thrust <span class="pill-tag">postawa</span></div><div class="meta">jak w Dół A</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2 min</div></div></div></div>
+    <div class="row prio" data-ex="db3"><div class="rtop"><div class="idx">3</div><div class="mid"><div class="name">RDL / hiperekstensja <span class="pill-tag">postawa</span></div><div class="meta">bezpieczne wzmacnianie dolnych pleców</div></div><div class="right"><div class="reps">3×10–12</div><div class="rest">2 min</div></div></div></div>
+    <div class="row" data-ex="db4"><div class="rtop"><div class="idx">4</div><div class="mid"><div class="name">Leg press / step-up</div><div class="meta">—</div></div><div class="right"><div class="reps">2–3×12</div><div class="rest">90 s</div></div></div></div>
+    <div class="row" data-ex="db5"><div class="rtop"><div class="idx">5</div><div class="mid"><div class="name">Łydki (opcjonalnie)</div><div class="meta">—</div></div><div class="right"><div class="reps">3×12–15</div><div class="rest">60 s</div></div></div></div>
+    <div class="row prio" data-ex="db6"><div class="rtop"><div class="idx">6</div><div class="mid"><div class="name">Pallof press (anti-rotacja) <span class="pill-tag">postawa</span></div><div class="meta">stabilizacja tułowia</div></div><div class="right"><div class="reps">3×10 <span class="sub">/str.</span></div><div class="rest">45–60 s</div></div></div></div>
+    <div class="row prio" data-ex="db7"><div class="rtop"><div class="idx">7</div><div class="mid"><div class="name">Bird dog <span class="pill-tag">postawa</span></div><div class="meta">„szklanka wody na krzyżu — nie rozlej"</div></div><div class="right"><div class="reps">2–3×8 <span class="sub">/str.</span></div><div class="rest">45 s</div></div></div></div>
+  </div>
+
+  <div class="legend"><span class="dot">▎</span> zielony pasek = ćwiczenie priorytetowe dla postawy · <span class="cy">cyfry</span> = serie×powtórzenia</div>
+
+  <div class="tools">
+    <button class="btn" id="export">Kopiuj postępy</button>
+    <button class="btn ghost" id="reset">Wyczyść</button>
+  </div>
+  <div class="savenote" id="savenote">Ciężary zapisują się automatycznie w tej przeglądarce. Kopia zapasowa: „Kopiuj postępy".</div>
+
+</div>
+
+<script>
+(function(){
+  var KEY='gymlog_v1';
+  var data={};
+  try{ data=JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ data={}; }
+  var canSave=true;
+  try{ localStorage.setItem('__t','1'); localStorage.removeItem('__t'); }
+  catch(e){ canSave=false; }
+
+  function save(){
+    try{ localStorage.setItem(KEY, JSON.stringify(data)); }catch(e){ canSave=false; refreshNote(); }
+  }
+  function fmt(n){
+    if(n===''||n==null||isNaN(n)) return '';
+    return (Math.round(n*100)/100).toString().replace('.',',');
+  }
+  function parse(s){
+    if(s==null) return NaN;
+    return parseFloat(String(s).replace(',','.'));
+  }
+  function relDate(ts){
+    if(!ts) return '';
+    var d=new Date(ts), n=new Date();
+    var day=86400000;
+    var a=new Date(d.getFullYear(),d.getMonth(),d.getDate());
+    var b=new Date(n.getFullYear(),n.getMonth(),n.getDate());
+    var diff=Math.round((b-a)/day);
+    if(diff===0) return 'dziś';
+    if(diff===1) return 'wczoraj';
+    if(diff<7) return diff+' dni temu';
+    return d.getDate()+'.'+(d.getMonth()+1);
+  }
+
+  // budowa paska logowania dla każdego ćwiczenia
+  document.querySelectorAll('.row[data-ex]').forEach(function(row){
+    var ex=row.getAttribute('data-ex');
+    var rec=data[ex]||{};
+    var bar=document.createElement('div'); bar.className='logbar';
+
+    var lbl=document.createElement('span'); lbl.className='lbl'; lbl.textContent='Ciężar';
+    var minus=document.createElement('div'); minus.className='step'; minus.textContent='−';
+    var inp=document.createElement('input');
+    inp.className='winput'; inp.type='text'; inp.inputMode='decimal';
+    inp.setAttribute('enterkeyhint','done'); inp.placeholder='—';
+    inp.value=(rec.w!=null? fmt(rec.w):'');
+    var plus=document.createElement('div'); plus.className='step'; plus.textContent='+';
+    var unit=document.createElement('span'); unit.className='unit'; unit.textContent='kg';
+    var hint=document.createElement('span'); hint.className='hint';
+
+    function setHint(justSaved){
+      var r=data[ex]||{};
+      if(justSaved){ hint.textContent='zapisano'; hint.classList.add('ok'); }
+      else if(r.w!=null){ hint.textContent='ost. '+fmt(r.w)+' kg · '+relDate(r.ts); hint.classList.remove('ok'); }
+      else { hint.textContent=''; hint.classList.remove('ok'); }
+    }
+    function commit(){
+      var v=parse(inp.value);
+      if(inp.value.trim()===''||isNaN(v)){ delete data[ex]; }
+      else { data[ex]={w:v, ts:Date.now()}; inp.value=fmt(v); }
+      save(); setHint(true);
+      setTimeout(setHint,1200);
+    }
+    minus.addEventListener('click',function(){
+      var v=parse(inp.value); if(isNaN(v)) v=0; v=Math.max(0,v-2.5); inp.value=fmt(v); commit();
+    });
+    plus.addEventListener('click',function(){
+      var v=parse(inp.value); if(isNaN(v)) v=0; v=v+2.5; inp.value=fmt(v); commit();
+    });
+    inp.addEventListener('change',commit);
+    inp.addEventListener('blur',commit);
+
+    bar.appendChild(lbl); bar.appendChild(minus); bar.appendChild(inp);
+    bar.appendChild(plus); bar.appendChild(unit); bar.appendChild(hint);
+    row.appendChild(bar);
+    setHint(false);
+  });
+
+  // zakładki
+  var tabs=document.querySelectorAll('.tab');
+  var panels=document.querySelectorAll('.panel');
+  tabs.forEach(function(t){
+    t.addEventListener('click',function(){
+      tabs.forEach(function(x){x.setAttribute('aria-selected','false');});
+      t.setAttribute('aria-selected','true');
+      var key=t.getAttribute('data-p');
+      panels.forEach(function(p){ p.classList.toggle('on', p.getAttribute('data-panel')===key); });
+      window.scrollTo({top:0});
+    });
+  });
+
+  // narzędzia
+  function refreshNote(){
+    var n=document.getElementById('savenote');
+    if(!canSave){ n.textContent='Uwaga: ta przeglądarka nie zapisuje danych dla tego pliku (otwierasz go jako plik lokalny). Otwórz ściągę z prawdziwego adresu URL, żeby ciężary się zapisywały — patrz instrukcja w czacie.'; n.style.color='#ffb0a0'; }
+  }
+  refreshNote();
+
+  document.getElementById('export').addEventListener('click',function(){
+    var lines=['Postępy — ciężary'];
+    var titles={warm:'',ga:'GÓRA A',da:'DÓŁ A',gb:'GÓRA B',db:'DÓŁ B'};
+    document.querySelectorAll('.panel').forEach(function(p){
+      var key=p.getAttribute('data-panel'); if(!titles[key]) return;
+      var block=[]; 
+      p.querySelectorAll('.row[data-ex]').forEach(function(row){
+        var ex=row.getAttribute('data-ex'); var r=data[ex];
+        if(r&&r.w!=null){
+          var nm=row.querySelector('.name').childNodes[0].textContent.trim();
+          block.push('  '+nm+': '+fmt(r.w)+' kg ('+relDate(r.ts)+')');
+        }
+      });
+      if(block.length){ lines.push(''); lines.push(titles[key]); lines=lines.concat(block); }
+    });
+    var text=lines.join('\n');
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){ alert('Skopiowano do schowka. Wklej gdziekolwiek jako kopię zapasową.'); },
+        function(){ prompt('Skopiuj ręcznie:', text); });
+    } else { prompt('Skopiuj ręcznie:', text); }
+  });
+
+  document.getElementById('reset').addEventListener('click',function(){
+    if(confirm('Wyczyścić wszystkie zapisane ciężary?')){
+      data={}; save();
+      document.querySelectorAll('.winput').forEach(function(i){ i.value=''; });
+      document.querySelectorAll('.hint').forEach(function(h){ h.textContent=''; h.classList.remove('ok'); });
+    }
+  });
+})();
+</script>
+</body>
+</html>
