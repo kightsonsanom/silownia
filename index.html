@@ -8,7 +8,7 @@
   :root{
     --bg:#14181b; --surface:#1d242a; --surface2:#232c33; --field:#10151a;
     --text:#eef3f5; --muted:#8b98a1; --line:#2c353c;
-    --num:#ffbf47; --tag:#3ecf8e;
+    --num:#ffbf47; --tag:#3ecf8e; --ss:#8ab4ff;
   }
   *{box-sizing:border-box;}
   html,body{margin:0; padding:0; background:var(--bg);}
@@ -70,6 +70,8 @@
     background:var(--surface); border-radius:12px; border-left:3px solid transparent;
   }
   .row.prio{border-left-color:var(--tag); background:var(--surface2);}
+  .row.sspair-top{margin-bottom:3px;}
+  .row.sspair-bot{margin-top:3px;}
   .rtop{display:flex; align-items:center; gap:12px;}
   .idx{
     flex:0 0 26px; text-align:center; font-size:16px; font-weight:700;
@@ -87,6 +89,15 @@
   .reps{font-size:22px; font-weight:800; color:var(--num); font-variant-numeric:tabular-nums; line-height:1;}
   .sub{color:var(--muted); font-weight:600; font-size:14px;}
   .rest{margin-top:6px; font-size:13px; color:var(--muted); white-space:nowrap;}
+  /* łącznik superserii */
+  .ssconnect{display:flex; justify-content:center; margin:1px 0;}
+  .sscard{
+    background:rgba(138,180,255,.10); border:1px solid rgba(138,180,255,.30);
+    border-radius:10px; padding:8px 14px; text-align:center; max-width:100%;
+  }
+  .sshdr{font-size:12.5px; font-weight:700; color:var(--ss);}
+  .sssub{margin-top:3px; font-size:12px; color:var(--muted); line-height:1.4;}
+  .sssub b{color:var(--text); font-weight:600;}
   .variants{display:flex; gap:8px; margin-top:13px; padding-top:12px; border-top:1px solid var(--line); flex-wrap:wrap;}
   .vchip{
     padding:8px 15px; border-radius:999px; border:1px solid var(--line);
@@ -110,9 +121,10 @@
     border-radius:10px; font-variant-numeric:tabular-nums; font-family:inherit;
   }
   .unit{font-size:14px; color:var(--muted);}
-  .legend{padding:12px 6px 6px; color:var(--muted); font-size:13px; line-height:1.5;}
+  .legend{padding:12px 6px 6px; color:var(--muted); font-size:13px; line-height:1.6;}
   .legend .dot{color:var(--tag); font-weight:700;}
   .legend .cy{color:var(--num); font-weight:700;}
+  .legend .ssc{color:var(--ss); font-weight:700;}
   .tools{display:flex; gap:10px; padding:14px 4px 6px;}
   .btn{
     flex:1; padding:13px; border-radius:10px; border:1px solid var(--line);
@@ -192,7 +204,10 @@
     <div class="row prio" data-ex="db7"><div class="rtop"><div class="idx">7</div><div class="mid"><div class="name">Bird dog <span class="pill-tag">postawa</span></div><div class="meta">„szklanka wody na krzyżu — nie rozlej"</div></div><div class="right"><div class="reps">2–3×8 <span class="sub">/str.</span></div><div class="rest">45 s</div></div></div></div>
   </div>
 
-  <div class="legend"><span class="dot">▎</span> zielony pasek = ćwiczenie priorytetowe dla postawy · <span class="cy">cyfry</span> = serie×powtórzenia</div>
+  <div class="legend">
+    <div><span class="dot">▎</span> zielony pasek = ćwiczenie priorytetowe dla postawy · <span class="cy">cyfry</span> = serie×powtórzenia</div>
+    <div style="margin-top:6px"><span class="ssc">⇄ superseria (opcjonalnie)</span> — A → <b style="color:var(--text);font-weight:600">od razu</b> B → <b style="color:var(--text);font-weight:600">~60–90 s</b> → powtórz. Sens polega na braku przerwy między A i B — to skraca trening. Działa tylko dla par z <b style="color:var(--text);font-weight:600">różnych partii</b> (np. push + pull); dlatego nie łączymy dwóch ćwiczeń core. Przerwy przy pojedynczych ćwiczeniach dotyczą zwykłych serii.</div>
+  </div>
 
   <div class="tools">
     <button class="btn" id="export">Kopiuj postępy</button>
@@ -217,6 +232,12 @@
     db4:['Leg press','Step-up']
   };
   var DAYS={ga:'Góra A', da:'Dół A', gb:'Góra B', db:'Dół B'};
+  // proponowane superserie (pary sąsiednich ćwiczeń — opcjonalne)
+  var SUPERSETS=[
+    ['ga6','ga7'],
+    ['gb4','gb5'], ['gb6','gb7'],
+    ['db4','db5']
+  ];
 
   var data={};
   try{ data=JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ data={}; }
@@ -230,33 +251,23 @@
   function save(){
     try{ localStorage.setItem(KEY, JSON.stringify(data)); }catch(e){ canSave=false; refreshNote(); }
   }
-  function fmt(n){
-    if(n===''||n==null||isNaN(n)) return '';
-    return (Math.round(n*100)/100).toString().replace('.',',');
-  }
+  function fmt(n){ if(n===''||n==null||isNaN(n)) return ''; return (Math.round(n*100)/100).toString().replace('.',','); }
   function parse(s){ if(s==null) return NaN; return parseFloat(String(s).replace(',','.')); }
 
   // ---- LICZNIKI UKOŃCZEŃ ----
   function doneCount(key){ return data['done:'+key]||0; }
   function updateCount(key){
     var n=doneCount(key);
-    var num=document.querySelector('.dnum[data-day="'+key+'"]');
-    if(num) num.textContent=n;
+    var num=document.querySelector('.dnum[data-day="'+key+'"]'); if(num) num.textContent=n;
     var badge=document.querySelector('.tabcount[data-day="'+key+'"]');
     if(badge){ badge.textContent=n; badge.style.display = n>0 ? 'inline-block' : 'none'; }
   }
-  // dolicznik na zakładkach
   document.querySelectorAll('.tab').forEach(function(t){
     var key=t.getAttribute('data-p');
-    if(DAYS[key]){
-      var b=document.createElement('span'); b.className='tabcount'; b.setAttribute('data-day',key);
-      t.appendChild(b);
-    }
+    if(DAYS[key]){ var b=document.createElement('span'); b.className='tabcount'; b.setAttribute('data-day',key); t.appendChild(b); }
   });
-  // pasek licznika na górze każdego panelu dnia
   document.querySelectorAll('.panel').forEach(function(p){
-    var key=p.getAttribute('data-panel');
-    if(!DAYS[key]) return;
+    var key=p.getAttribute('data-panel'); if(!DAYS[key]) return;
     var bar=document.createElement('div'); bar.className='donebar';
     var lbl=document.createElement('span'); lbl.className='dlbl'; lbl.textContent='Ukończone';
     var num=document.createElement('span'); num.className='dnum'; num.setAttribute('data-day',key); num.textContent=doneCount(key);
@@ -278,14 +289,11 @@
     var vs=VARIANTS[ex];
     var sel = vs ? (data[ex+':sel']!=null ? data[ex+':sel'] : 0) : 0;
     function curKey(){ return vs ? ex+':'+sel : ex; }
-
     var inp=document.createElement('input');
-
     if(vs){
       var vbar=document.createElement('div'); vbar.className='variants';
       vs.forEach(function(label,i){
-        var chip=document.createElement('div'); chip.className='vchip'+(i===sel?' sel':'');
-        chip.textContent=label;
+        var chip=document.createElement('div'); chip.className='vchip'+(i===sel?' sel':''); chip.textContent=label;
         chip.addEventListener('click',function(){
           sel=i; data[ex+':sel']=sel; save();
           vbar.querySelectorAll('.vchip').forEach(function(c,ci){ c.classList.toggle('sel',ci===sel); });
@@ -295,16 +303,13 @@
       });
       row.appendChild(vbar);
     }
-
     var bar=document.createElement('div'); bar.className='logbar'+(vs?' tight':'');
     var lbl=document.createElement('span'); lbl.className='lbl'; lbl.textContent='Ciężar';
     var minus=document.createElement('div'); minus.className='step'; minus.textContent='−';
-    inp.className='winput'; inp.type='text'; inp.inputMode='decimal';
-    inp.setAttribute('enterkeyhint','done'); inp.placeholder='—';
+    inp.className='winput'; inp.type='text'; inp.inputMode='decimal'; inp.setAttribute('enterkeyhint','done'); inp.placeholder='—';
     var rec0=data[curKey()]; inp.value=(rec0&&rec0.w!=null? fmt(rec0.w):'');
     var plus=document.createElement('div'); plus.className='step'; plus.textContent='+';
     var unit=document.createElement('span'); unit.className='unit'; unit.textContent='kg';
-
     function commit(){
       var v=parse(inp.value);
       if(inp.value.trim()===''||isNaN(v)){ delete data[curKey()]; }
@@ -313,11 +318,24 @@
     }
     minus.addEventListener('click',function(){ var v=parse(inp.value); if(isNaN(v)) v=0; v=Math.max(0,v-2.5); inp.value=fmt(v); commit(); });
     plus.addEventListener('click',function(){ var v=parse(inp.value); if(isNaN(v)) v=0; v=v+2.5; inp.value=fmt(v); commit(); });
-    inp.addEventListener('change',commit);
-    inp.addEventListener('blur',commit);
-
+    inp.addEventListener('change',commit); inp.addEventListener('blur',commit);
     bar.appendChild(lbl); bar.appendChild(minus); bar.appendChild(inp); bar.appendChild(plus); bar.appendChild(unit);
     row.appendChild(bar);
+  });
+
+  // ---- ŁĄCZNIKI SUPERSERII ----
+  SUPERSETS.forEach(function(pair){
+    var a=document.querySelector('.row[data-ex="'+pair[0]+'"]');
+    var b=document.querySelector('.row[data-ex="'+pair[1]+'"]');
+    if(!a||!b||a.nextElementSibling!==b) return;
+    a.classList.add('sspair-top'); b.classList.add('sspair-bot');
+    var con=document.createElement('div'); con.className='ssconnect';
+    var card=document.createElement('div'); card.className='sscard';
+    var hdr=document.createElement('div'); hdr.className='sshdr'; hdr.textContent='⇄ Superseria (opcjonalnie)';
+    var sub=document.createElement('div'); sub.className='sssub';
+    sub.innerHTML='między ćwiczeniami: <b>bez przerwy</b> (od razu drugie) · po parze: <b>~60–90 s</b>';
+    card.appendChild(hdr); card.appendChild(sub); con.appendChild(card);
+    b.parentNode.insertBefore(con, b);
   });
 
   // ---- ZAKŁADKI ----
@@ -349,12 +367,11 @@
         var ex=row.getAttribute('data-ex');
         var nm=row.querySelector('.name').childNodes[0].textContent.trim();
         var vs=VARIANTS[ex];
-        if(vs){
-          vs.forEach(function(label,i){ var r=data[ex+':'+i]; if(r&&r.w!=null) block.push('  '+nm+' ['+label+']: '+fmt(r.w)+' kg'); });
-        } else { var r=data[ex]; if(r&&r.w!=null) block.push('  '+nm+': '+fmt(r.w)+' kg'); }
+        if(vs){ vs.forEach(function(label,i){ var r=data[ex+':'+i]; if(r&&r.w!=null) block.push('  '+nm+' ['+label+']: '+fmt(r.w)+' kg'); }); }
+        else { var r=data[ex]; if(r&&r.w!=null) block.push('  '+nm+': '+fmt(r.w)+' kg'); }
       });
-      if(block.length){ lines.push(''); lines.push(titles[key]+' (ukończone: '+doneCount(key)+'×)'); lines=lines.concat(block); }
-      else { lines.push(''); lines.push(titles[key]+' (ukończone: '+doneCount(key)+'×)'); }
+      lines.push(''); lines.push(titles[key]+' (ukończone: '+doneCount(key)+'×)');
+      if(block.length) lines=lines.concat(block);
     });
     var text=lines.join('\n');
     if(navigator.clipboard&&navigator.clipboard.writeText){
