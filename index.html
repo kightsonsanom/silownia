@@ -196,8 +196,8 @@
   <!-- DÓŁ B -->
   <div class="panel" data-panel="db">
     <div class="row" data-ex="db1"><div class="rtop"><div class="idx">1</div><div class="mid"><div class="name">Przysiad ze sztangą / bułgarski</div><div class="meta">—</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2–3 min</div></div></div></div>
-    <div class="row prio" data-ex="db2"><div class="rtop"><div class="idx">2</div><div class="mid"><div class="name">Hip Thrust <span class="pill-tag">postawa</span></div><div class="meta">jak w Dół A</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2 min</div></div></div></div>
-    <div class="row prio" data-ex="db3"><div class="rtop"><div class="idx">3</div><div class="mid"><div class="name">RDL / hiperekstensja <span class="pill-tag">postawa</span></div><div class="meta">bezpieczne wzmacnianie dolnych pleców</div></div><div class="right"><div class="reps">3×10–12</div><div class="rest">2 min</div></div></div></div>
+    <div class="row prio" data-ex="db2"><div class="rtop"><div class="idx">2</div><div class="mid"><div class="name">Hip Thrust <span class="pill-tag">postawa</span></div><div class="meta">broda do klatki, żebra w dół, czuj pośladki</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2 min</div></div></div></div>
+    <div class="row prio" data-ex="db3"><div class="rtop"><div class="idx">3</div><div class="mid"><div class="name">Martwy ciąg rumuński (RDL) <span class="pill-tag">postawa</span></div><div class="meta">plecy proste, biodra w tył</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2 min</div></div></div></div>
     <div class="row" data-ex="db4"><div class="rtop"><div class="idx">4</div><div class="mid"><div class="name">Leg press / step-up</div><div class="meta">—</div></div><div class="right"><div class="reps">2–3×12</div><div class="rest">90 s</div></div></div></div>
     <div class="row" data-ex="db5"><div class="rtop"><div class="idx">5</div><div class="mid"><div class="name">Łydki (opcjonalnie)</div><div class="meta">—</div></div><div class="right"><div class="reps">3×12–15</div><div class="rest">60 s</div></div></div></div>
     <div class="row prio" data-ex="db6"><div class="rtop"><div class="idx">6</div><div class="mid"><div class="name">Pallof press (anti-rotacja) <span class="pill-tag">postawa</span></div><div class="meta">stabilizacja tułowia</div></div><div class="right"><div class="reps">3×10 <span class="sub">/str.</span></div><div class="rest">45–60 s</div></div></div></div>
@@ -228,10 +228,11 @@
     gb2:['Podciąganie','Ściąganie'],
     gb6:['Wyciąg','Francuskie'],
     db1:['Sztanga','Bułgarski'],
-    db3:['RDL','Hiperekstensja'],
     db4:['Leg press','Step-up']
   };
   var DAYS={ga:'Góra A', da:'Dół A', gb:'Góra B', db:'Dół B'};
+  // te same ćwiczenia w różne dni — wspólny ciężar (jeden klucz)
+  var LINKS={ da1:'hip', db2:'hip', da3:'rdl', db3:'rdl' };
   // proponowane superserie (pary sąsiednich ćwiczeń — opcjonalne)
   var SUPERSETS=[
     ['ga6','ga7'],
@@ -247,6 +248,21 @@
   Object.keys(VARIANTS).forEach(function(ex){
     if(data[ex]!=null && data[ex+':0']==null){ data[ex+':0']=data[ex]; delete data[ex]; }
   });
+
+  // migracja do wspólnych kluczy (zachowaj najświeższy wpis) + sprzątanie po hiperekstensji
+  (function(){
+    function mig(target, sources){
+      if(data[target]==null){
+        var best=null;
+        sources.forEach(function(k){ var r=data[k]; if(r&&r.w!=null && (!best||(r.ts||0)>(best.ts||0))) best=r; });
+        if(best) data[target]={w:best.w, ts:best.ts||Date.now()};
+      }
+      sources.forEach(function(k){ delete data[k]; });
+    }
+    mig('hip', ['da1','db2']);
+    mig('rdl', ['da3','db3:0','db3']);
+    delete data['db3:1']; delete data['db3:sel'];
+  })();
 
   function save(){
     try{ localStorage.setItem(KEY, JSON.stringify(data)); }catch(e){ canSave=false; refreshNote(); }
@@ -288,7 +304,7 @@
     var ex=row.getAttribute('data-ex');
     var vs=VARIANTS[ex];
     var sel = vs ? (data[ex+':sel']!=null ? data[ex+':sel'] : 0) : 0;
-    function curKey(){ return vs ? ex+':'+sel : ex; }
+    function curKey(){ return LINKS[ex] ? LINKS[ex] : (vs ? ex+':'+sel : ex); }
     var inp=document.createElement('input');
     if(vs){
       var vbar=document.createElement('div'); vbar.className='variants';
@@ -297,7 +313,7 @@
         chip.addEventListener('click',function(){
           sel=i; data[ex+':sel']=sel; save();
           vbar.querySelectorAll('.vchip').forEach(function(c,ci){ c.classList.toggle('sel',ci===sel); });
-          var r=data[curKey()]; inp.value=(r&&r.w!=null? fmt(r.w):'');
+          var r=data[curKey()]; inp.value=(r&&r.w!=null? fmt(r.w):''); inp.setAttribute('data-skey', curKey());
         });
         vbar.appendChild(chip);
       });
@@ -307,14 +323,15 @@
     var lbl=document.createElement('span'); lbl.className='lbl'; lbl.textContent='Ciężar';
     var minus=document.createElement('div'); minus.className='step'; minus.textContent='−';
     inp.className='winput'; inp.type='text'; inp.inputMode='decimal'; inp.setAttribute('enterkeyhint','done'); inp.placeholder='—';
-    var rec0=data[curKey()]; inp.value=(rec0&&rec0.w!=null? fmt(rec0.w):'');
+    var rec0=data[curKey()]; inp.value=(rec0&&rec0.w!=null? fmt(rec0.w):''); inp.setAttribute('data-skey', curKey());
     var plus=document.createElement('div'); plus.className='step'; plus.textContent='+';
     var unit=document.createElement('span'); unit.className='unit'; unit.textContent='kg';
     function commit(){
-      var v=parse(inp.value);
-      if(inp.value.trim()===''||isNaN(v)){ delete data[curKey()]; }
-      else { data[curKey()]={w:v, ts:Date.now()}; inp.value=fmt(v); }
+      var v=parse(inp.value); var k=curKey();
+      if(inp.value.trim()===''||isNaN(v)){ delete data[k]; }
+      else { data[k]={w:v, ts:Date.now()}; inp.value=fmt(v); }
       save();
+      document.querySelectorAll('.winput[data-skey="'+k+'"]').forEach(function(o){ if(o!==inp) o.value=inp.value; });
     }
     minus.addEventListener('click',function(){ var v=parse(inp.value); if(isNaN(v)) v=0; v=Math.max(0,v-2.5); inp.value=fmt(v); commit(); });
     plus.addEventListener('click',function(){ var v=parse(inp.value); if(isNaN(v)) v=0; v=v+2.5; inp.value=fmt(v); commit(); });
@@ -367,7 +384,8 @@
         var ex=row.getAttribute('data-ex');
         var nm=row.querySelector('.name').childNodes[0].textContent.trim();
         var vs=VARIANTS[ex];
-        if(vs){ vs.forEach(function(label,i){ var r=data[ex+':'+i]; if(r&&r.w!=null) block.push('  '+nm+' ['+label+']: '+fmt(r.w)+' kg'); }); }
+        if(LINKS[ex]){ var rl=data[LINKS[ex]]; if(rl&&rl.w!=null) block.push('  '+nm+': '+fmt(rl.w)+' kg'); }
+        else if(vs){ vs.forEach(function(label,i){ var r=data[ex+':'+i]; if(r&&r.w!=null) block.push('  '+nm+' ['+label+']: '+fmt(r.w)+' kg'); }); }
         else { var r=data[ex]; if(r&&r.w!=null) block.push('  '+nm+': '+fmt(r.w)+' kg'); }
       });
       lines.push(''); lines.push(titles[key]+' (ukończone: '+doneCount(key)+'×)');
