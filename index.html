@@ -132,6 +132,13 @@
   }
   .btn.ghost{color:var(--muted);}
   .savenote{padding:2px 6px 10px; color:var(--muted); font-size:12px; line-height:1.5;}
+  .tmp{color:var(--text); font-weight:600; font-variant-numeric:tabular-nums;}
+  .lastbar{margin:10px 6px 0; padding:11px 14px; background:var(--surface2); border:1px solid var(--line); border-radius:10px; font-size:13.5px; color:var(--muted); line-height:1.45;}
+  .lastbar b{color:var(--text); font-weight:600;}
+  .lastbar .nx{color:var(--tag); font-weight:700;}
+  .tab.nexttab{border-color:var(--tag); box-shadow:0 0 0 1px rgba(62,207,142,.35);}
+  .planlink{display:inline-block; margin:0 6px 16px; color:var(--muted); font-size:11.5px; text-decoration:none; opacity:.55;}
+  .planlink:hover{opacity:.85; text-decoration:underline;}
 </style>
 </head>
 <body>
@@ -141,6 +148,8 @@
     <h1>Ściąga — Góra/Dół</h1>
     <p>Rotacja: Góra A → Dół A → Góra B → Dół B. Rób sesje po kolei w dni treningowe. Nigdy dwie Góra ani dwie Dół pod rząd.</p>
   </div>
+
+  <div class="lastbar" id="lastbar" style="display:none"></div>
 
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" aria-selected="true"  data-p="warm">Rozgrzewka</button>
@@ -155,27 +164,28 @@
     <div class="note"><b>~10–12 min, przed każdym treningiem.</b> RIR 1–3 (zostaw 1–3 powtórzenia w zapasie). Tyg. 1–3: technika, RIR 2–3.</div>
     <div class="row"><div class="rtop"><div class="idx">1</div><div class="mid"><div class="name">Cardio, lekko</div><div class="meta">rower / bieżnia z nachyleniem</div></div><div class="right"><div class="reps">5 min</div></div></div></div>
     <div class="row"><div class="rtop"><div class="idx">2</div><div class="mid"><div class="name">Rolowanie (SMR)</div><div class="meta">Góra: klatka, plecy, T-spine · Dół: uda, TFL, przywodziciele</div></div><div class="right"><div class="reps">~3 min</div><div class="rest">30–45 s/miejsce</div></div></div></div>
-    <div class="row"><div class="rtop"><div class="idx">3</div><div class="mid"><div class="name">Aktywacja — dni Góra</div><div class="meta">band pull-apart 2×15 · chin tucks 2×10 · rotacja zewn. 2×12</div></div><div class="right"><div class="reps">~5 min</div></div></div></div>
+    <div class="row"><div class="rtop"><div class="idx">3</div><div class="mid"><div class="name">Aktywacja — dni Góra</div><div class="meta">band pull-apart 2×15 · no money 2×15 · YTI raise 2×10</div></div><div class="right"><div class="reps">~5 min</div></div></div></div>
     <div class="row"><div class="rtop"><div class="idx">3</div><div class="mid"><div class="name">Aktywacja — dni Dół</div><div class="meta">mostek pośladkowy 2×15 · clamshells 2×12 · dead bug 2×8</div></div><div class="right"><div class="reps">~5 min</div></div></div></div>
     <div class="row"><div class="rtop"><div class="idx">4</div><div class="mid"><div class="name">Serie wprowadzające</div><div class="meta">na 1. ćwiczeniu, rosnący ciężar</div></div><div class="right"><div class="reps">2–3</div></div></div></div>
   </div>
 
   <!-- GÓRA A -->
   <div class="panel" data-panel="ga">
-    <div class="row prio" data-ex="ga1"><div class="rtop"><div class="idx">1</div><div class="mid"><div class="name">Wiosłowanie sztangą / hantlą jednorącz <span class="pill-tag">postawa</span></div><div class="meta">barki w dół, ciągnij do bioder</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2 min</div></div></div></div>
+    <div class="row prio" data-ex="ga1"><div class="rtop"><div class="idx">1</div><div class="mid"><div class="name">Wiosłowanie sztangą / hantlą jednorącz <span class="pill-tag">postawa</span></div><div class="meta"><span class="tmp">tempo 3010</span> · barki w dół, ciągnij do bioder</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2 min</div></div></div></div>
     <div class="row" data-ex="ga2"><div class="rtop"><div class="idx">2</div><div class="mid"><div class="name">Podciąganie / ściąganie drążka</div><div class="meta">łopatki najpierw w dół</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2 min</div></div></div></div>
-    <div class="row" data-ex="ga3"><div class="rtop"><div class="idx">3</div><div class="mid"><div class="name">Wyciskanie hantli, ławka płaska</div><div class="meta">łopatki ściągnięte</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2 min</div></div></div></div>
+    <div class="row" data-ex="ga3"><div class="rtop"><div class="idx">3</div><div class="mid"><div class="name">Wyciskanie hantli, ławka płaska</div><div class="meta"><span class="tmp">tempo 3010</span> · łopatki ściągnięte</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2 min</div></div></div></div>
     <div class="row prio" data-ex="ga4"><div class="rtop"><div class="idx">4</div><div class="mid"><div class="name">Face pull (wyciąg) <span class="pill-tag">postawa</span></div><div class="meta">tylne aktony + rotatory</div></div><div class="right"><div class="reps">3×15</div><div class="rest">60–90 s</div></div></div></div>
     <div class="row" data-ex="ga5"><div class="rtop"><div class="idx">5</div><div class="mid"><div class="name">Wyciskanie hantli nad głowę, siedząc</div><div class="meta">żebra w dół, nie wyginaj lędźwi</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">90 s</div></div></div></div>
     <div class="row" data-ex="ga6"><div class="rtop"><div class="idx">6</div><div class="mid"><div class="name">Uginanie ramion (biceps)</div><div class="meta">—</div></div><div class="right"><div class="reps">2–3×10–12</div><div class="rest">60–90 s</div></div></div></div>
-    <div class="row prio" data-ex="ga7"><div class="rtop"><div class="idx">7</div><div class="mid"><div class="name">Rotacja zewn. z gumą + chin tucks <span class="pill-tag">postawa</span></div><div class="meta">bark + ustawienie szyi</div></div><div class="right"><div class="reps">2×12–15</div><div class="rest">45 s</div></div></div></div>
+    <div class="row prio" data-ex="ga7"><div class="rtop"><div class="idx">7</div><div class="mid"><div class="name">Rotacja zewn. z gumą <span class="pill-tag">postawa</span></div><div class="meta">rotatory barku</div></div><div class="right"><div class="reps">2×12–15</div><div class="rest">45 s</div></div></div></div>
+    <div class="row prio" data-ex="ga8"><div class="rtop"><div class="idx">8</div><div class="mid"><div class="name">Trap 3 raise <span class="pill-tag">postawa</span></div><div class="meta">dolny czworoboczny — ściąga łopatki w dół</div></div><div class="right"><div class="reps">3×10–12</div><div class="rest">60–90 s</div></div></div></div>
   </div>
 
   <!-- DÓŁ A -->
   <div class="panel" data-panel="da">
-    <div class="row prio" data-ex="da1"><div class="rtop"><div class="idx">1</div><div class="mid"><div class="name">Hip Thrust <span class="pill-tag">postawa</span></div><div class="meta">broda do klatki, żebra w dół, czuj pośladki</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2 min</div></div></div></div>
-    <div class="row" data-ex="da2"><div class="rtop"><div class="idx">2</div><div class="mid"><div class="name">Przysiad goblet / ze sztangą</div><div class="meta">klatka wysoko, kolana na zewnątrz</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2–3 min</div></div></div></div>
-    <div class="row prio" data-ex="da3"><div class="rtop"><div class="idx">3</div><div class="mid"><div class="name">Martwy ciąg rumuński (RDL) <span class="pill-tag">postawa</span></div><div class="meta">plecy proste, biodra w tył</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2 min</div></div></div></div>
+    <div class="row prio" data-ex="da1"><div class="rtop"><div class="idx">1</div><div class="mid"><div class="name">Hip Thrust <span class="pill-tag">postawa</span></div><div class="meta"><span class="tmp">tempo 30X1</span> · broda do klatki, żebra w dół, czuj pośladki</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2 min</div></div></div></div>
+    <div class="row" data-ex="da2"><div class="rtop"><div class="idx">2</div><div class="mid"><div class="name">Przysiad goblet / ze sztangą</div><div class="meta"><span class="tmp">tempo 3010</span> · klatka wysoko, kolana na zewnątrz</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2–3 min</div></div></div></div>
+    <div class="row prio" data-ex="da3"><div class="rtop"><div class="idx">3</div><div class="mid"><div class="name">Martwy ciąg rumuński (RDL) <span class="pill-tag">postawa</span></div><div class="meta"><span class="tmp">tempo 3010</span> · plecy proste, biodra w tył</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2 min</div></div></div></div>
     <div class="row" data-ex="da4"><div class="rtop"><div class="idx">4</div><div class="mid"><div class="name">Wykrok w tył</div><div class="meta">tułów lekko w przód, obciąż pośladek</div></div><div class="right"><div class="reps">2–3×8–10 <span class="sub">/nogę</span></div><div class="rest">90 s</div></div></div></div>
     <div class="row" data-ex="da5"><div class="rtop"><div class="idx">5</div><div class="mid"><div class="name">Uginanie nóg (leg curl)</div><div class="meta">dwugłowe uda</div></div><div class="right"><div class="reps">2–3×12</div><div class="rest">60–90 s</div></div></div></div>
     <div class="row prio" data-ex="da6"><div class="rtop"><div class="idx">6</div><div class="mid"><div class="name">Dead bug <span class="pill-tag">postawa</span></div><div class="meta">wydech, lędźwie wgniataj w podłogę</div></div><div class="right"><div class="reps">3×8–10 <span class="sub">/str.</span></div><div class="rest">45–60 s</div></div></div></div>
@@ -184,20 +194,21 @@
 
   <!-- GÓRA B -->
   <div class="panel" data-panel="gb">
-    <div class="row prio" data-ex="gb1"><div class="rtop"><div class="idx">1</div><div class="mid"><div class="name">Wiosłowanie wyciąg siedząc <span class="pill-tag">postawa</span></div><div class="meta">barki w dół, ściągaj łopatki</div></div><div class="right"><div class="reps">3×10–12</div><div class="rest">2 min</div></div></div></div>
+    <div class="row prio" data-ex="gb1"><div class="rtop"><div class="idx">1</div><div class="mid"><div class="name">Wiosłowanie wyciąg siedząc <span class="pill-tag">postawa</span></div><div class="meta"><span class="tmp">tempo 3010</span> · barki w dół, ściągaj łopatki</div></div><div class="right"><div class="reps">3×10–12</div><div class="rest">2 min</div></div></div></div>
     <div class="row" data-ex="gb2"><div class="rtop"><div class="idx">2</div><div class="mid"><div class="name">Podciąganie / ściąganie szeroko</div><div class="meta">szeroki chwyt</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2 min</div></div></div></div>
-    <div class="row" data-ex="gb3"><div class="rtop"><div class="idx">3</div><div class="mid"><div class="name">Wyciskanie hantli, skos w górę</div><div class="meta">górna klatka</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2 min</div></div></div></div>
+    <div class="row" data-ex="gb3"><div class="rtop"><div class="idx">3</div><div class="mid"><div class="name">Wyciskanie hantli, skos w górę</div><div class="meta"><span class="tmp">tempo 3010</span> · górna klatka</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2 min</div></div></div></div>
     <div class="row prio" data-ex="gb4"><div class="rtop"><div class="idx">4</div><div class="mid"><div class="name">Rear delt fly (odwodzenie w opadzie) <span class="pill-tag">postawa</span></div><div class="meta">tylne aktony barków</div></div><div class="right"><div class="reps">3×12–15</div><div class="rest">60–90 s</div></div></div></div>
     <div class="row" data-ex="gb5"><div class="rtop"><div class="idx">5</div><div class="mid"><div class="name">Unoszenie hantli bokiem</div><div class="meta">boczne aktony</div></div><div class="right"><div class="reps">3×12–15</div><div class="rest">60–90 s</div></div></div></div>
     <div class="row" data-ex="gb6"><div class="rtop"><div class="idx">6</div><div class="mid"><div class="name">Triceps: wyciąg / francuskie</div><div class="meta">—</div></div><div class="right"><div class="reps">2–3×10–12</div><div class="rest">60–90 s</div></div></div></div>
     <div class="row prio" data-ex="gb7"><div class="rtop"><div class="idx">7</div><div class="mid"><div class="name">Band pull-apart + rotacja zewn. <span class="pill-tag">postawa</span></div><div class="meta">—</div></div><div class="right"><div class="reps">2×15–20</div><div class="rest">45 s</div></div></div></div>
+    <div class="row prio" data-ex="gb8"><div class="rtop"><div class="idx">8</div><div class="mid"><div class="name">Trap 3 raise <span class="pill-tag">postawa</span></div><div class="meta">dolny czworoboczny — ściąga łopatki w dół</div></div><div class="right"><div class="reps">3×10–12</div><div class="rest">60–90 s</div></div></div></div>
   </div>
 
   <!-- DÓŁ B -->
   <div class="panel" data-panel="db">
-    <div class="row" data-ex="db1"><div class="rtop"><div class="idx">1</div><div class="mid"><div class="name">Przysiad ze sztangą / bułgarski</div><div class="meta">—</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2–3 min</div></div></div></div>
-    <div class="row prio" data-ex="db2"><div class="rtop"><div class="idx">2</div><div class="mid"><div class="name">Hip Thrust <span class="pill-tag">postawa</span></div><div class="meta">broda do klatki, żebra w dół, czuj pośladki</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2 min</div></div></div></div>
-    <div class="row prio" data-ex="db3"><div class="rtop"><div class="idx">3</div><div class="mid"><div class="name">Martwy ciąg rumuński (RDL) <span class="pill-tag">postawa</span></div><div class="meta">plecy proste, biodra w tył</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2 min</div></div></div></div>
+    <div class="row" data-ex="db1"><div class="rtop"><div class="idx">1</div><div class="mid"><div class="name">Przysiad ze sztangą / bułgarski</div><div class="meta"><span class="tmp">tempo 3010</span></div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2–3 min</div></div></div></div>
+    <div class="row prio" data-ex="db2"><div class="rtop"><div class="idx">2</div><div class="mid"><div class="name">Hip Thrust <span class="pill-tag">postawa</span></div><div class="meta"><span class="tmp">tempo 30X1</span> · broda do klatki, żebra w dół, czuj pośladki</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2 min</div></div></div></div>
+    <div class="row prio" data-ex="db3"><div class="rtop"><div class="idx">3</div><div class="mid"><div class="name">Martwy ciąg rumuński (RDL) <span class="pill-tag">postawa</span></div><div class="meta"><span class="tmp">tempo 3010</span> · plecy proste, biodra w tył</div></div><div class="right"><div class="reps">3×8–10</div><div class="rest">2 min</div></div></div></div>
     <div class="row" data-ex="db4"><div class="rtop"><div class="idx">4</div><div class="mid"><div class="name">Leg press / step-up</div><div class="meta">—</div></div><div class="right"><div class="reps">2–3×12</div><div class="rest">90 s</div></div></div></div>
     <div class="row" data-ex="db5"><div class="rtop"><div class="idx">5</div><div class="mid"><div class="name">Łydki (opcjonalnie)</div><div class="meta">—</div></div><div class="right"><div class="reps">3×12–15</div><div class="rest">60 s</div></div></div></div>
     <div class="row prio" data-ex="db6"><div class="rtop"><div class="idx">6</div><div class="mid"><div class="name">Pallof press (anti-rotacja) <span class="pill-tag">postawa</span></div><div class="meta">stabilizacja tułowia</div></div><div class="right"><div class="reps">3×10 <span class="sub">/str.</span></div><div class="rest">45–60 s</div></div></div></div>
@@ -207,6 +218,7 @@
 
   <div class="legend">
     <div><span class="dot">▎</span> zielony pasek = ćwiczenie priorytetowe dla postawy · <span class="cy">cyfry</span> = serie×powtórzenia</div>
+    <div style="margin-top:6px"><span class="tmp">tempo 3010</span> = 3 s w dół (ekscentryka), dynamicznie w górę; <span class="tmp">30X1</span> = jak wyżej + 1 s pauzy u góry (kontakt z mięśniem). Tempo tylko na głównych bojach.</div>
     <div style="margin-top:6px"><span class="ssc">⇄ superseria (opcjonalnie)</span> — A → <b style="color:var(--text);font-weight:600">od razu</b> B → <b style="color:var(--text);font-weight:600">~60–90 s</b> → powtórz. Sens polega na braku przerwy między A i B — to skraca trening. Działa tylko dla par z <b style="color:var(--text);font-weight:600">różnych partii</b> (np. push + pull); dlatego nie łączymy dwóch ćwiczeń core. Przerwy przy pojedynczych ćwiczeniach dotyczą zwykłych serii.</div>
   </div>
 
@@ -215,6 +227,7 @@
     <button class="btn ghost" id="reset">Wyczyść</button>
   </div>
   <div class="savenote" id="savenote">Ciężary i liczniki zapisują się automatycznie w tej przeglądarce. Kopia zapasowa: „Kopiuj postępy".</div>
+  <a class="planlink" href="plan_treningowy.md" target="_blank" rel="noopener">pełny plan ↗</a>
 
 </div>
 
@@ -234,7 +247,7 @@
   };
   var DAYS={ga:'Góra A', da:'Dół A', gb:'Góra B', db:'Dół B'};
   // te same ćwiczenia w różne dni — wspólny ciężar (jeden klucz)
-  var LINKS={ da1:'hip', db2:'hip', da3:'rdl', db3:'rdl' };
+  var LINKS={ da1:'hip', db2:'hip', da3:'rdl', db3:'rdl', ga8:'trap', gb8:'trap' };
   // proponowane superserie (pary sąsiednich ćwiczeń — opcjonalne)
   var SUPERSETS=[
     ['ga6','ga7'],
@@ -271,6 +284,29 @@
   }
   function fmt(n){ if(n===''||n==null||isNaN(n)) return ''; return (Math.round(n*100)/100).toString().replace('.',','); }
   function parse(s){ if(s==null) return NaN; return parseFloat(String(s).replace(',','.')); }
+  function relDate(ts){
+    if(!ts) return '';
+    var day=86400000, now=new Date(), d=new Date(ts);
+    var a=new Date(d.getFullYear(),d.getMonth(),d.getDate());
+    var b=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+    var diff=Math.round((b-a)/day);
+    if(diff<=0) return 'dziś';
+    if(diff===1) return 'wczoraj';
+    if(diff<7) return diff+' dni temu';
+    return d.getDate()+'.'+(d.getMonth()+1);
+  }
+  var ROT=['ga','da','gb','db'];
+  function updateLast(){
+    var bar=document.getElementById('lastbar'); if(!bar) return;
+    document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('nexttab'); });
+    var last=data['last'];
+    if(last && DAYS[last.day]){
+      var idx=ROT.indexOf(last.day); var nx=ROT[(idx+1)%ROT.length];
+      bar.innerHTML='Ostatnio zaliczone: <b>'+DAYS[last.day]+'</b> ('+relDate(last.ts)+') · następny: <span class="nx">'+DAYS[nx]+'</span>';
+      bar.style.display='block';
+      var nt=document.querySelector('.tab[data-p="'+nx+'"]'); if(nt) nt.classList.add('nexttab');
+    } else { bar.style.display='none'; }
+  }
 
   // ---- LICZNIKI UKOŃCZEŃ ----
   function doneCount(key){ return data['done:'+key]||0; }
@@ -293,13 +329,14 @@
     var btns=document.createElement('div'); btns.className='dbtns';
     var minus=document.createElement('div'); minus.className='dminus'; minus.textContent='−';
     var plus=document.createElement('button'); plus.className='dplus'; plus.textContent='+1 Zaliczam';
-    plus.addEventListener('click',function(){ data['done:'+key]=doneCount(key)+1; save(); updateCount(key); });
+    plus.addEventListener('click',function(){ data['done:'+key]=doneCount(key)+1; data['last']={day:key, ts:Date.now()}; save(); updateCount(key); updateLast(); });
     minus.addEventListener('click',function(){ data['done:'+key]=Math.max(0,doneCount(key)-1); save(); updateCount(key); });
     btns.appendChild(minus); btns.appendChild(plus);
     bar.appendChild(lbl); bar.appendChild(num); bar.appendChild(x); bar.appendChild(btns);
     p.insertBefore(bar, p.firstChild);
     updateCount(key);
   });
+  updateLast();
 
   // ---- LOGOWANIE CIĘŻARÓW ----
   document.querySelectorAll('.row[data-ex]').forEach(function(row){
@@ -404,6 +441,7 @@
       data={}; save();
       document.querySelectorAll('.winput').forEach(function(i){ i.value=''; });
       Object.keys(DAYS).forEach(updateCount);
+      updateLast();
     }
   });
 })();
