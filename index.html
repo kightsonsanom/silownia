@@ -137,8 +137,26 @@
   .lastbar b{color:var(--text); font-weight:600;}
   .lastbar .nx{color:var(--tag); font-weight:700;}
   .tab.nexttab{border-color:var(--tag); box-shadow:0 0 0 1px rgba(62,207,142,.35);}
-  .planlink{display:inline-block; margin:0 6px 16px; color:var(--muted); font-size:11.5px; text-decoration:none; opacity:.55;}
+  .planlink{display:inline-block; margin:0 6px 16px; color:var(--muted); font-size:11.5px; text-decoration:none; opacity:.55; cursor:pointer;}
   .planlink:hover{opacity:.85; text-decoration:underline;}
+  .overlay{position:fixed; inset:0; background:rgba(12,15,18,.975); z-index:50; display:none; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:0 10px;}
+  .overlay.on{display:block;}
+  .sheet{max-width:620px; margin:0 auto; padding:0 4px calc(40px + env(safe-area-inset-bottom));}
+  .planhead{position:sticky; top:0; background:rgba(12,15,18,.99); display:flex; align-items:center; justify-content:space-between; padding:14px 2px 12px; border-bottom:1px solid var(--line); margin-bottom:8px; z-index:2;}
+  .planhead .pt{font-size:17px; font-weight:700; color:var(--text);}
+  .closebtn{width:42px; height:42px; border-radius:10px; border:1px solid var(--line); background:var(--surface); color:var(--text); font-size:24px; line-height:1; cursor:pointer; font-family:inherit;}
+  .sheet h2{font-size:18px; margin:22px 0 8px; color:var(--text);}
+  .sheet h3{font-size:14px; margin:16px 0 6px; color:var(--num); font-weight:700;}
+  .sheet p{font-size:14px; line-height:1.55; color:var(--muted); margin:6px 0;}
+  .sheet p b, .sheet li b{color:var(--text); font-weight:600;}
+  .sheet ul{margin:6px 0; padding-left:20px;}
+  .sheet li{font-size:14px; line-height:1.5; color:var(--muted); margin:4px 0;}
+  .sheet table{width:100%; border-collapse:collapse; margin:6px 0 10px; font-size:13px;}
+  .sheet th, .sheet td{text-align:left; padding:6px 5px; border-bottom:1px solid var(--line); color:var(--muted); vertical-align:top;}
+  .sheet th{color:var(--text); font-weight:600;}
+  .sheet td.n{color:var(--num); font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap;}
+  .sheet .pp{color:var(--tag); font-weight:700;}
+  .sheet .ss{color:var(--ss); font-weight:700;}
 </style>
 </head>
 <body>
@@ -227,8 +245,113 @@
     <button class="btn ghost" id="reset">Wyczyść</button>
   </div>
   <div class="savenote" id="savenote">Ciężary i liczniki zapisują się automatycznie w tej przeglądarce. Kopia zapasowa: „Kopiuj postępy".</div>
-  <a class="planlink" href="plan_treningowy.md" target="_blank" rel="noopener">pełny plan ↗</a>
+  <a class="planlink" id="planlink" href="#" role="button">pełny plan ↗</a>
 
+</div>
+
+<div class="overlay" id="plan">
+  <div class="sheet">
+    <div class="planhead"><span class="pt">Pełny plan</span><button class="closebtn" id="planclose" aria-label="Zamknij">×</button></div>
+
+    <h2>1. Żywienie</h2>
+    <p>Podtrzymanie ~2800–2950 kcal. Cel na masę: <b>~3150–3250 kcal</b>. Białko <b>175–190 g</b>, tłuszcz <b>80–90 g</b>, węgle <b>~400–430 g</b>.</p>
+    <p>Monitoring: średnia tygodniowa wagi, cel <b>+0,25–0,4 kg/tydz.</b> Waga stoi 2–3 tyg. → +150–200 kcal (węgle). Rośniesz &gt;0,5 kg/tydz. → to głównie tłuszcz, odejmij ~150 kcal.</p>
+
+    <h2>2. Struktura tygodnia</h2>
+    <p>Góra/Dół, 4 jednostki rotacyjnie: <b>Góra A → Dół A → Góra B → Dół B</b>. Rób po kolei w dni, które pasują — co drugi dzień, weekendy i dzień-po-dniu są OK. <b>Zasada: nigdy dwie Góra ani dwie Dół pod rząd.</b> Każda partia 2×/tydz. + 2×30 min spacer dziennie.</p>
+
+    <h2>3. Rozgrzewka (~10–12 min)</h2>
+    <p>Cardio 5 min → rolowanie ~3 min → aktywacja → serie wprowadzające.</p>
+    <ul>
+      <li>Rolowanie: Góra — klatka, plecy, T-spine; Dół — uda, TFL, przywodziciele.</li>
+      <li>Aktywacja Góra: band pull-apart 2×15 · no money 2×15 · YTI raise 2×10.</li>
+      <li>Aktywacja Dół: mostek 2×15 · clamshells 2×12 · dead bug 2×8.</li>
+    </ul>
+
+    <h2>4. Tempo</h2>
+    <p>Zapis: 1. cyfra = sek. opuszczania, 2. = pauza na dole, 3. = faza główna (X = dynamicznie), 4. = pauza na górze. <b>3010</b> = 3 s w dół, dynamicznie w górę. <b>30X1</b> = jak wyżej + 1 s pauzy u góry (hip thrust). Tylko na głównych bojach — izolacje i core kontrolujesz, ale bez liczenia.</p>
+
+    <h2>5. Treningi</h2>
+    <p><span class="pp">[P]</span> = priorytet postawy · <span class="ss">⇄</span> = para superserii. Hip Thrust, RDL i Trap 3 raise to te same ćwiczenia w obu dniach — <b>ten sam ciężar</b>.</p>
+
+    <h3>Góra A</h3>
+    <table>
+      <tr><th>#</th><th>Ćwiczenie</th><th>S×P</th><th>Tempo</th><th>Przerwa</th></tr>
+      <tr><td>1</td><td>Wiosłowanie sztangą/hantlą <span class="pp">[P]</span></td><td class="n">3×8–10</td><td class="n">3010</td><td>2 min</td></tr>
+      <tr><td>2</td><td>Podciąganie/ściąganie drążka</td><td class="n">3×8–10</td><td>—</td><td>2 min</td></tr>
+      <tr><td>3</td><td>Wyciskanie hantli, ławka płaska</td><td class="n">3×8–10</td><td class="n">3010</td><td>2 min</td></tr>
+      <tr><td>4</td><td>Face pull <span class="pp">[P]</span></td><td class="n">3×15</td><td>—</td><td>60–90 s</td></tr>
+      <tr><td>5</td><td>Wyciskanie hantli nad głowę</td><td class="n">3×8–10</td><td>—</td><td>90 s</td></tr>
+      <tr><td>6</td><td>Biceps (hantle/sztanga) <span class="ss">⇄</span></td><td class="n">2–3×10–12</td><td>—</td><td>60–90 s</td></tr>
+      <tr><td>7</td><td>Rotacja zewn. z gumą <span class="pp">[P]</span> <span class="ss">⇄</span></td><td class="n">2×12–15</td><td>—</td><td>45 s</td></tr>
+      <tr><td>8</td><td>Trap 3 raise <span class="pp">[P]</span></td><td class="n">3×10–12</td><td>—</td><td>60–90 s</td></tr>
+    </table>
+
+    <h3>Dół A</h3>
+    <table>
+      <tr><th>#</th><th>Ćwiczenie</th><th>S×P</th><th>Tempo</th><th>Przerwa</th></tr>
+      <tr><td>1</td><td>Hip Thrust <span class="pp">[P]</span></td><td class="n">3×8–10</td><td class="n">30X1</td><td>2 min</td></tr>
+      <tr><td>2</td><td>Przysiad goblet/ze sztangą</td><td class="n">3×8–10</td><td class="n">3010</td><td>2–3 min</td></tr>
+      <tr><td>3</td><td>RDL <span class="pp">[P]</span></td><td class="n">3×8–10</td><td class="n">3010</td><td>2 min</td></tr>
+      <tr><td>4</td><td>Wykrok w tył</td><td class="n">2–3×8–10/nogę</td><td>—</td><td>90 s</td></tr>
+      <tr><td>5</td><td>Uginanie nóg (leg curl)</td><td class="n">2–3×12</td><td>—</td><td>60–90 s</td></tr>
+      <tr><td>6</td><td>Dead bug <span class="pp">[P]</span></td><td class="n">3×8–10/str.</td><td>—</td><td>45–60 s</td></tr>
+      <tr><td>7</td><td>Plank boczny</td><td class="n">2–3×20–40 s/str.</td><td>—</td><td>45 s</td></tr>
+    </table>
+
+    <h3>Góra B</h3>
+    <table>
+      <tr><th>#</th><th>Ćwiczenie</th><th>S×P</th><th>Tempo</th><th>Przerwa</th></tr>
+      <tr><td>1</td><td>Wiosłowanie wyciąg siedząc <span class="pp">[P]</span></td><td class="n">3×10–12</td><td class="n">3010</td><td>2 min</td></tr>
+      <tr><td>2</td><td>Podciąganie/ściąganie szeroko</td><td class="n">3×8–10</td><td>—</td><td>2 min</td></tr>
+      <tr><td>3</td><td>Wyciskanie hantli, skos w górę</td><td class="n">3×8–10</td><td class="n">3010</td><td>2 min</td></tr>
+      <tr><td>4</td><td>Rear delt fly <span class="pp">[P]</span></td><td class="n">3×12–15</td><td>—</td><td>60–90 s</td></tr>
+      <tr><td>5</td><td>Unoszenie hantli bokiem</td><td class="n">3×12–15</td><td>—</td><td>60–90 s</td></tr>
+      <tr><td>6</td><td>Triceps: wyciąg/francuskie <span class="ss">⇄</span></td><td class="n">2–3×10–12</td><td>—</td><td>60–90 s</td></tr>
+      <tr><td>7</td><td>Band pull-apart + rotacja zewn. <span class="pp">[P]</span> <span class="ss">⇄</span></td><td class="n">2×15–20</td><td>—</td><td>45 s</td></tr>
+      <tr><td>8</td><td>Trap 3 raise <span class="pp">[P]</span></td><td class="n">3×10–12</td><td>—</td><td>60–90 s</td></tr>
+    </table>
+
+    <h3>Dół B</h3>
+    <table>
+      <tr><th>#</th><th>Ćwiczenie</th><th>S×P</th><th>Tempo</th><th>Przerwa</th></tr>
+      <tr><td>1</td><td>Przysiad ze sztangą/bułgarski</td><td class="n">3×8–10</td><td class="n">3010</td><td>2–3 min</td></tr>
+      <tr><td>2</td><td>Hip Thrust <span class="pp">[P]</span></td><td class="n">3×8–10</td><td class="n">30X1</td><td>2 min</td></tr>
+      <tr><td>3</td><td>RDL <span class="pp">[P]</span></td><td class="n">3×8–10</td><td class="n">3010</td><td>2 min</td></tr>
+      <tr><td>4</td><td>Leg press/step-up <span class="ss">⇄</span></td><td class="n">2–3×12</td><td>—</td><td>90 s</td></tr>
+      <tr><td>5</td><td>Łydki (opcjonalnie) <span class="ss">⇄</span></td><td class="n">3×12–15</td><td>—</td><td>60 s</td></tr>
+      <tr><td>6</td><td>Pallof press <span class="pp">[P]</span></td><td class="n">3×10/str.</td><td>—</td><td>45–60 s</td></tr>
+      <tr><td>7</td><td>Bird dog <span class="pp">[P]</span></td><td class="n">2–3×8/str.</td><td>—</td><td>45 s</td></tr>
+      <tr><td>8</td><td>Spięcia na maszynie (brzuch)</td><td class="n">3×12–15</td><td>—</td><td>60–90 s</td></tr>
+    </table>
+    <p><b>Uwaga o proporcjach:</b> wyciskań jest celowo mniej niż ciągnięć — nadmiar push przy niedoborze pleców pogłębia zaokrąglenie barków.</p>
+
+    <h2>6. Superserie (opcjonalne)</h2>
+    <p>Pary <span class="ss">⇄</span>: Góra A (6+7), Góra B (6+7), Dół B (4+5). Schemat: <b>A → od razu B (bez przerwy) → ~60–90 s → powtórz.</b> Sens to brak przerwy między A i B — skraca trening o ~10–15 min. Działa tylko dla par z <b>różnych partii</b>; pierwsze 3 ćwiczenia zawsze jako zwykłe serie z pełną przerwą.</p>
+
+    <h2>7. Rolowanie vs rozciąganie</h2>
+    <p>Roluj <b>przed</b> treningiem (krótko). Rozciągaj statycznie <b>po</b> treningu lub w dni wolne. Korekcyjne (zginacze bioder, klatka) — jak najczęściej, najlepiej codziennie.</p>
+
+    <h2>8. Dom / dni wolne (~15–20 min)</h2>
+    <ul>
+      <li>Rolowanie: czworogłowe/TFL, przywodziciele, T-spine, klatka.</li>
+      <li>Rozciąganie (30–60 s, 2×): couch stretch (ściśnij pośladek!), klatka w futrynie, głęboki przysiad, open book.</li>
+      <li>Aktywacja: mostek 2×15, dead bug 2×8/str., bird dog 2×8/str., band pull-apart 2×15.</li>
+      <li>Szyja: chin tucks + masaż szyi.</li>
+    </ul>
+
+    <h2>9. Progresja</h2>
+    <p>Kaskada (warunek: brak bólu): <b>1)</b> dodaj ciężar (+0,5–5 kg) przy dobrej technice → <b>2)</b> nie da się → powtórz ciężar i dodaj serię → <b>3)</b> dalej nie → dodaj powtórzenie / wydłuż eccentric / dodaj pauzę. Tyg. 1–3: technika, RIR 2–3. Deload co ~6–8 tyg. Waga 87→95 kg powoli, +0,25–0,4 kg/tydz.</p>
+
+    <h2>10. Reflux</h2>
+    <p>Usunięto hiperekstensję. Przy RDL, spięciach na maszynie i ciężkich martwych: <b>nie ćwicz tuż po posiłku</b> i <b>nie zatrzymuj oddechu</b> na maksymalnym spięciu. Gdy coś prowokuje zgagę — podmiana na wariant mniej uciskający (hip hinge z gumą, Trap 3 raise z podparciem klatki o ławkę).</p>
+
+    <h2>11. Ergonomia i ból pleców przy staniu</h2>
+    <p>To objaw przodopochylenia — poprawi się z silniejszymi pośladkami i core. Przy staniu: lekko podwiń miednicę, napnij pośladki i brzuch, żebra w dół. Buduj czas stania stopniowo. Sit-stand ~30:15, co 45 min napięcia pośladków i ściągnięcie łopatek. Ekran na wysokości oczu.</p>
+
+    <h2>Dlaczego Góra/Dół</h2>
+    <p>Trafia każdą partię 2×/tydz., pozwala przechylić proporcję pull:push na korzyść pleców (dźwignia nr 1 przeciw zaokrąglonym barkom) i wpina pośladki, zawias biodrowy oraz core w każdy mikrocykl. Układ 3-dniowy FBW daje tę samą częstotliwość przy mniej dniach — dobry dla zabieganych, ale Ty chcesz trenować więcej, więc 4 dni są lepszym wyborem.</p>
+  </div>
 </div>
 
 <script>
@@ -444,6 +567,13 @@
       updateLast();
     }
   });
+
+  // ---- NAKŁADKA PEŁNEGO PLANU ----
+  var ov=document.getElementById('plan');
+  var planOpen=document.getElementById('planlink');
+  var planClose=document.getElementById('planclose');
+  if(planOpen&&ov){ planOpen.addEventListener('click', function(e){ e.preventDefault(); ov.classList.add('on'); ov.scrollTop=0; document.body.style.overflow='hidden'; }); }
+  if(planClose&&ov){ planClose.addEventListener('click', function(){ ov.classList.remove('on'); document.body.style.overflow=''; }); }
 })();
 </script>
 </body>
